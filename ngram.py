@@ -86,8 +86,8 @@ def main():
         print(f"\nEntraînement avec des n-grammes de taille : {ngram_range[0]}")
         ngram_model = Ngram(ngram_range=ngram_range, max_features=1000)
         ngram_model.process_data(data, "review", "sentiment")
-        ngram_model.train_model()
-        ngram_model.evaluate_model()
+        ngram_model.train()
+        ngram_model.predict()
 
 if __name__ == "__main__":
   main()
