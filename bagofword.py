@@ -25,12 +25,10 @@ url = "https://drive.google.com/uc?id=1vnf0SL2ucnABzL5nWUbZRvyto8rS2rMz"
 output = "imdb.csv"
 gdown.download(url, output)
 
-data = pd.read_csv("imdb.csv")
-
 class BagOfWord:
   def __init__(self, df):
     self.df = df
-
+    
   def process(self, feat_name=None, target_name=None, max_feature=100):
     vectorizer = CountVectorizer(
       stop_words = "english",
@@ -55,16 +53,22 @@ class BagOfWord:
     self.X_test = X_test
     self.y_train = y_train
     self.y_test = y_test
-
+    
   def train(self):
     self.model = LogisticRegression()
     self.model.fit(self.X_train, self.y_train)
 
   def predict(self):
-    y_pred = self.model.predict(self.X_test)
-    accuracy = accuracy_score(self.y_test, y_pred)
+    y_train_pred = self.model.predict(self.X_train)
+    y_test_pred = self.model.predict(self.X_test)
+    
+    train_accuracy = accuracy_score(self.y_train, y_train_pred)
+    test_accuracy = accuracy_score(self.y_test, y_test_pred)
 
-    print(f"Accuracy: {accuracy}")
+    print(f"\n\nTraining accuracy: {train_accuracy}")
+    print(f"Test accuracy: {test_accuracy}")
+
+
 
 def clean_data(text):
   text = text.lower()
@@ -75,9 +79,18 @@ def clean_data(text):
 
   return text
 
-data["review"] = data["review"].apply(lambda x: clean_data(x))
+def main():
+  data = pd.read_csv("imdb.csv")
+  data["review"] = data["review"].apply(lambda x: clean_data(x))
 
-bag = BagOfWord(data)
-bag.process("review", "sentiment", 1000)
-bag.train()
-bag.predict()
+  bag = BagOfWord(data)
+  bag.process("review", "sentiment", 1000)
+
+  #Train and evaluate model
+  bag.train()
+  bag.predict()
+
+
+#Entry point for the script
+if __name__ == "__main__":
+    main()
